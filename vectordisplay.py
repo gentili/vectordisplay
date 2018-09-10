@@ -1,58 +1,31 @@
 #!/usr/bin/env python
 
-from pyfiglet import Figlet, figlet_format, print_figlet
-import curses
-from curses import (
-    A_BOLD, 
-    A_NORMAL,
-    COLOR_RED,
-    COLOR_BLACK,
-    COLOR_GREEN,
-    COLOR_YELLOW,
-    COLOR_WHITE,
-)
+from sdl2 import *
+import sdl2.video
+from OpenGL import GL
 
-fig_large = Figlet(
-    font="cyberlarge",
-    justify="center",
-)
-fig_small = Figlet(
-    font="cybersmall",
-    justify="center",
-)
+SDL_Init(SDL_INIT_VIDEO)
+rect = SDL_Rect()
+SDL_GetDisplayBounds(0,rect)
+window = SDL_CreateWindow(None,
+                          SDL_WINDOWPOS_UNDEFINED,
+                          SDL_WINDOWPOS_UNDEFINED,
+                          rect.w,
+                          rect.h,
+                          SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP)
+SDL_ShowCursor(SDL_DISABLE)
+print(sdl2.video.SDL_GL_SetAttribute(
+    sdl2.video.SDL_GL_CONTEXT_MAJOR_VERSION,
+    3))
+print(sdl2.video.SDL_GL_SetAttribute(
+    sdl2.video.SDL_GL_CONTEXT_MINOR_VERSION,
+    3))
+print(sdl2.video.SDL_GL_SetAttribute(
+    sdl2.video.SDL_GL_CONTEXT_PROFILE_MASK,
+    sdl2.video.SDL_GL_CONTEXT_PROFILE_CORE))
+context = sdl2.SDL_GL_CreateContext(window)
+GL.glClearColor(0.3,0.3,0.3,1)
+GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+sdl2.SDL_GL_SwapWindow(window)
 
-def flushkeys(stdscr):
-    try:
-        while True:
-            stdscr.getkey()
-    except curses.error:
-        pass
-
-def main(stdscr):
-    curses.curs_set(False)
-    # curses.halfdelay(1)
-    curses.init_pair(1, COLOR_GREEN, COLOR_BLACK)
-    GREEN = curses.color_pair(1)
-    curses.init_pair(2, COLOR_WHITE, COLOR_RED)
-    ERROR = curses.color_pair(2) | A_BOLD
-    curses.init_pair(3, COLOR_WHITE, COLOR_GREEN)
-    SUCCESS = curses.color_pair(3) | A_BOLD
-    while True:
-        stdscr.bkgd(' ', 0)
-        stdscr.clear()
-        stdscr.addstr(4,0,fig_large.renderText(
-            "Vector Display Initialized"
-        ),GREEN|A_BOLD)
-        stdscr.addstr(
-            fig_small.renderText("AWAITING INPUT"),
-            GREEN
-        )
-        stdscr.addstr("\n\n")
-        stdscr.refresh()
-
-        # Clear any kestrokes in the queue
-        stdscr.getch()
-        break
-
-curses.wrapper(main)
-print_figlet("Restart")
+input ("running")
